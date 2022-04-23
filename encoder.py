@@ -2,7 +2,11 @@ from PIL import Image
 from PIL import ImageColor
 import os
 
-def encode(text,filename,size,with_alpha=True,over_image=None):
+def encode(text,
+           size=(640,640),
+           save_as=None,
+           with_alpha=True,
+           over_image=None,):
     def stbl(text,
              length,
              fill=None,
@@ -69,4 +73,6 @@ def encode(text,filename,size,with_alpha=True,over_image=None):
         if close:
             break
 
-    img.save(filename)
+    if save_as != None:
+        img.save(save_as)
+    return img

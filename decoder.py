@@ -1,10 +1,11 @@
 from PIL import Image
 
-def decode(filename,with_alpha=True):
-    if with_alpha:
+def decode(filename_or_PIL_Image,with_alpha=True):
+    if type(filename_or_PIL_Image) != Image.Image:
+        filename = filename_or_PIL_Image
         img = Image.open(filename)
     else:
-        img = Image.open(filename)
+        img = filename_or_PIL_Image
 
     def to_hex(rgb):
         if with_alpha:
