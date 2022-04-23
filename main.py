@@ -20,7 +20,7 @@ class FileLayout(BoxLayout):
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)
         self.path = ""
-    def on_enter(self,s,v):
+    def on_enter(self,s):
         pass
 
 class App(App):
@@ -37,10 +37,10 @@ class App(App):
             win.withdraw()
             if is_save:
                 filename = filedialog.asksaveasfilename(
-                    title="Сохранить как...",initialdir=filepath.text,defaultextension=".png",
+                    title="Сохранить как...",initialdir=os.path.dirname(filepath.text),defaultextension=".png",
                     filetypes=[("PNG","*.png")]if is_alpha.state=="down" else[("PNG","*.png"),("JPEG","*.jpg")])
             else:
-                filename = filedialog.askopenfilename(title="Открыть...",initialdir=filepath.text,
+                filename = filedialog.askopenfilename(title="Открыть...",initialdir=os.path.dirname(filepath.text),
                     filetypes=[("PNG","*.png")]if is_alpha.state=="down" else[("PNG","*.png"),("JPEG","*.jpg")])
             filepath.text = filename
             file.path = filename
@@ -100,7 +100,7 @@ class App(App):
                 s.background_color = [.1,.85,.1,1]
         alpha.bind(on_press=gbn)
 
-        file = self.filelayout("Сохранить изображение как...","",True,alpha)
+        file = self.filelayout("Сохранить изображение как...",os.path.abspath("./image.png"),True,alpha)
         en.add_widget(file)
 
         over = self.filelayout("Наложить на изображение... (необяз.)","",False,alpha)
@@ -167,7 +167,7 @@ class App(App):
                 s.background_color = [.1,.85,.1,1]
         alpha.bind(on_press=gbn)
 
-        deimg = self.filelayout("Открыть изображение...","",False,alpha)
+        deimg = self.filelayout("Открыть изображение...",os.path.abspath("./image.png"),False,alpha)
         def deioef(s):
             deimgpre.source = deimg.path
             deimgpre.reload()
@@ -187,7 +187,7 @@ class App(App):
 
         tde.add_widget(de)
 
-        deimgpre = AsyncImage(source=noimageurl,size_hint_max_x=500)
+        deimgpre = AsyncImage(source=deimg.path,size_hint_max_x=500)
         tde.add_widget(deimgpre)
 
         return root

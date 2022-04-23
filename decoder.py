@@ -32,12 +32,17 @@ def decode(filename_or_PIL_Image,with_alpha=True):
         for y in range(img.size[1]):
             if (x,y) == (0,0):
                 continue
-            hex += to_hex(pixels[x,y])
-            i += 1
-            if i == count:
+            c = to_hex(pixels[x,y])
+            hex += c
+            i += len(c)
+            if i >= count:
                 close = True
                 break
         if close:
             break
+    hex = hex[:count]
 
     return bytes.fromhex(hex).decode('windows-1251')
+
+if __name__ == '__main__':
+    decode("image.png",False)

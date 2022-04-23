@@ -49,9 +49,10 @@ def encode(text,
     if len(colors) > size[0]*size[1]-1:
         raise ValueError("length of text is too long")
 
-    finished_colors = ["#"+fillStart(hex(len(textHex))[2:],"0",8 if with_alpha else 6)]+colors
+    chex = "#"+fillStart(hex(len(textHex))[2:],"0",8 if with_alpha else 6)
+    finished_colors = [chex]+colors
 
-    if over_image:
+    if over_image != None:
         img = Image.open(over_image)
         size = img.size
     else:
@@ -65,7 +66,7 @@ def encode(text,
     for x in range(size[0]):
         for y in range(size[1]):
             pixels[x,y] = ImageColor.getcolor(finished_colors[i],
-                                  "RGBA"if with_alpha else "RGB")
+                                  "RGBA"if with_alpha else"RGB")
             i += 1
             if i == len(finished_colors):
                 close = True
