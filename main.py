@@ -7,16 +7,21 @@ from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.slider import Slider
+from kivy.uix.image import AsyncImage
 from tkinter import filedialog
 from tkinter import Tk
 import encoder
 import decoder
 import os
 
+noimageurl = "https://st3.depositphotos.com/23594922/31822/v/600/depositphotos_318221368-stock-illustration-missing-picture-page-for-website.jpg"
+
 class FileLayout(BoxLayout):
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)
         self.path = ""
+    def on_enter(self,s,v):
+        pass
 
 class App(App):
     def filelayout(self,hint,path,is_save,is_alpha):
@@ -24,7 +29,7 @@ class App(App):
         file.path = path
         filepath = TextInput(hint_text=hint,multiline=False,text=path)
         def setpath(s,v):file.path = v
-        filepath.bind(text=setpath)
+        filepath.bind(text=setpath,on_text_validate=file.on_enter)
         file.add_widget(filepath)
         filechooser = Button(text="...",size_hint_max_x=45)
         def choose(s):
@@ -39,6 +44,7 @@ class App(App):
                     filetypes=[("PNG","*.png")]if is_alpha.state=="down" else[("PNG","*.png"),("JPEG","*.jpg")])
             filepath.text = filename
             file.path = filename
+            file.on_enter(filechooser)
             win.destroy()
         filechooser.bind(on_release=choose)
         file.add_widget(filechooser)
@@ -52,8 +58,8 @@ class App(App):
         def toenfu(s):
             if s.state == "down":
                 tode.state = "normal"
-                root.remove_widget(de)
-                root.add_widget(en)
+                root.remove_widget(tde)
+                root.add_widget(ten)
             else:
                 s.state = "down"
         toen.bind(on_press=toenfu)
@@ -64,8 +70,8 @@ class App(App):
         def todefu(s):
             if s.state == "down":
                 toen.state = "normal"
-                root.remove_widget(en)
-                root.add_widget(de)
+                root.remove_widget(ten)
+                root.add_widget(tde)
             else:
                 s.state = "down"
         tode.bind(on_press=todefu)
@@ -75,6 +81,7 @@ class App(App):
         root.add_widget(deen)
 
 
+        ten = BoxLayout(orientation="horizontal")
 
         en = BoxLayout(orientation="vertical")
 
@@ -128,12 +135,23 @@ class App(App):
 
         enbtn = Button(text="Зашифровать",size_hint_max_y=50)
         def encode(s):
-            encoder.encode(text.text,file.path,(width.value,height.value),alpha.state=="down",over.path if over.path != "" else None)
+            encoder.encode(text.text,(int(width.value),int(height.value)),file.path,
+                           alpha.state=="down",over.path if over.path!=""else None)
+            preview.source = file.path
+            preview.reload()
         enbtn.bind(on_release=encode)
         en.add_widget(enbtn)
 
-        root.add_widget(en)
+        ten.add_widget(en)
 
+        preview = AsyncImage(source=noimageurl,size_hint_max_x=500)
+        ten.add_widget(preview)
+
+        root.add_widget(ten)
+
+
+
+        tde = BoxLayout(orientation="horizontal")
 
         de = BoxLayout(orientation="vertical")
 
@@ -150,6 +168,10 @@ class App(App):
         alpha.bind(on_press=gbn)
 
         deimg = self.filelayout("Открыть изображение...","",False,alpha)
+        def deioef(s):
+            deimgpre.source = deimg.path
+            deimgpre.reload()
+        deimg.on_enter = deioef
         de.add_widget(deimg)
 
         de.add_widget(alpha)
@@ -162,6 +184,11 @@ class App(App):
 
         deval = TextInput(hint_text="Расшифрованный текст",readonly=True)
         de.add_widget(deval)
+
+        tde.add_widget(de)
+
+        deimgpre = AsyncImage(source=noimageurl,size_hint_max_x=500)
+        tde.add_widget(deimgpre)
 
         return root
 
