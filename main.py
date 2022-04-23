@@ -43,13 +43,20 @@ class App(App):
             else:
                 filename = filedialog.askopenfilename(title="Открыть...",initialdir=os.path.dirname(filepath.text),
                     filetypes=[("PNG","*.png")]if is_alpha.state=="down" else[("PNG","*.png"),("JPEG","*.jpg")])
-            filepath.text = filename
-            file.path = filename
+            if filename:
+                filepath.text = filename
+                file.path = filename
             file.on_enter(filechooser)
             win.destroy()
         filechooser.bind(on_release=choose)
         file.add_widget(filechooser)
         return file
+    def intable(self,n):
+        try:
+            c = int(n)
+            return True
+        except:
+            return False
     def build(self):
         root = BoxLayout(orientation="vertical")
 
@@ -117,32 +124,54 @@ class App(App):
                 s.background_color = [.1,.85,.1,1]
         alpha.bind(on_press=gbn)
 
-        file = self.filelayout("Сохранить изображение как...",os.path.abspath("./image.png"),True,alpha)
+        file = self.filelayout("Сохранить изображение как...",
+                               os.path.abspath("./image.png"),True,alpha)
         en.add_widget(file)
 
         over = self.filelayout("Наложить на изображение... (необяз.)","",False,alpha)
         en.add_widget(over)
 
-        size = GridLayout(rows=3,cols=2,size_hint_max_y=120)
+        size = GridLayout(rows=2,cols=3,size_hint_max_y=61,padding=(0,0,5,0))
 
-        size.add_widget(Label(text="Ширина"))
-        size.add_widget(Label(text="Высота"))
+        size.add_widget(Label(text="Ширина",
+                              size_hint_max_x=75))
 
-        wint = TextInput(text="640",size_hint_max_y=30,halign="center")
+        wint = TextInput(text="640",
+                         size_hint_max_x=75,
+                         size_hint_max_y=30,
+                         halign="center")
+        def wtipf(s,v):
+            s.text = "".join(filter(str.isdigit,v))
+            try:
+                width.value = int(s.text)
+            except:
+                width.value = 0
+        wint.bind(text=wtipf)
         size.add_widget(wint)
 
-        hint = TextInput(text="640",size_hint_max_y=30,halign="center")
-        size.add_widget(hint)
-
         width = Slider(min=5,max=2000,value=640)
-        def wcd(s,v):
-            wint.text=str(int(v))
+        def wcd(s,v):wint.text=str(int(v))
         width.bind(value=wcd)
         size.add_widget(width)
 
+        size.add_widget(Label(text="Высота",
+                              size_hint_max_x=75))
+
+        hint = TextInput(text="640",
+                         size_hint_max_x=75,
+                         size_hint_max_y=30,
+                         halign="center")
+        def htipf(s,v):
+            s.text = "".join(filter(str.isdigit,v))
+            try:
+                height.value = int(s.text)
+            except:
+                height.value = 0
+        hint.bind(text=htipf)
+        size.add_widget(hint)
+
         height = Slider(min=5,max=2000,value=640)
-        def hcd(s,v):
-            hint.text=str(int(v))
+        def hcd(s,v):hint.text=str(int(v))
         height.bind(value=hcd)
         size.add_widget(height)
 
@@ -150,7 +179,8 @@ class App(App):
 
         en.add_widget(alpha)
 
-        enbtn = Button(text="Зашифровать",size_hint_max_y=50)
+        enbtn = Button(text="Зашифровать",
+                       size_hint_max_y=50)
         def encode(s):
             encoder.encode(text.text,(int(width.value),int(height.value)),file.path,
                            alpha.state=="down",over.path if over.path!=""else None)
@@ -161,7 +191,9 @@ class App(App):
 
         ten.add_widget(en)
 
-        preview = AsyncImage(source=noimageurl,size_hint_max_x=500)
+        preview = AsyncImage(source=file.path,
+                             size_hint_max_x=500,
+                             size_hint_min_x=250)
         ten.add_widget(preview)
 
         root.add_widget(ten)
@@ -196,6 +228,8 @@ class App(App):
         debtn = Button(text="Расшифровать",size_hint_max_y=50)
         def decode(s):
             deval.text = decoder.decode(deimg.path,alpha.state=="down")
+            deimgpre.source = deimg.path
+            deimgpre.reload()
         debtn.bind(on_release=decode)
         de.add_widget(debtn)
 
@@ -204,7 +238,9 @@ class App(App):
 
         tde.add_widget(de)
 
-        deimgpre = AsyncImage(source=deimg.path,size_hint_max_x=500)
+        deimgpre = AsyncImage(source=deimg.path,
+                             size_hint_max_x=500,
+                             size_hint_min_x=250)
         tde.add_widget(deimgpre)
 
         return root
