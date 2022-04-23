@@ -7,8 +7,8 @@ import encoder
 
 encoder.encode(
     text,            # str
-    filename,        # str (path)
-    size,            # (width,height)
+    size=(640,640),  # (width,height)
+    save_as=None,    # str (path)
     with_alpha=True, # bool
     over_image=None  # str (path)
 )                  # returns PIL.Image.Image
