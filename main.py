@@ -10,6 +10,7 @@ from kivy.uix.slider import Slider
 from kivy.uix.image import AsyncImage
 from tkinter import filedialog
 from tkinter import Tk
+import webbrowser
 import encoder
 import decoder
 import os
@@ -51,6 +52,22 @@ class App(App):
         return file
     def build(self):
         root = BoxLayout(orientation="vertical")
+
+        me = BoxLayout(orientation="horizontal",size_hint_max_y=25)
+
+        github = Button(text="Github",background_color=[0.2,0.2,0.2],color=[0.5,0.5,0.5])
+        github.bind(on_release=lambda s:webbrowser.open("https://github.com/themixray"))
+        me.add_widget(github)
+
+        slogan = Button(text="SloganMC",background_color=[0.2,0.2,0.2],color=[0.5,0.5,0.5])
+        slogan.bind(on_release=lambda s:webbrowser.open("http://sloganmc.ru/"))
+        me.add_widget(slogan)
+
+        discord = Button(text="Discord",background_color=[0.2,0.2,0.2],color=[0.5,0.5,0.5])
+        discord.bind(on_release=lambda s:webbrowser.open("https://discord.gg/2knaFjAsP7"))
+        me.add_widget(discord)
+
+        root.add_widget(me)
 
         deen = BoxLayout(orientation="horizontal",size_hint_max_y=50)
 
